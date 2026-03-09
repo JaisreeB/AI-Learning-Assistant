@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Adaptive Learning Assistant</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f4f6fb;
+text-align:center;
+margin-top:80px;
+}
+
+.container{
+width:600px;
+margin:auto;
+padding:30px;
+background:white;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+animation:fadeIn 0.6s;
+}
+
+.hidden{
+display:none;
+}
+
+button{
+padding:10px 20px;
+margin-top:15px;
+background:#4a6cf7;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#3551d1;
+}
+
+input,select{
+padding:8px;
+width:70%;
+margin-top:10px;
+}
+
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- PAGE 1 LOGIN -->
+
+<div id="page1" class="container">
+
+<h2>Welcome to Learning Assistant</h2>
+
+<p>Please enter your name</p>
+
+<input type="text" id="username" placeholder="Your name">
+
+<br>
+
+<button onclick="nextPage(1)">Start Learning</button>
+
+</div>
+
+
+<!-- PAGE 2 TOPIC -->
+
+<div id="page2" class="container hidden">
+
+<h2 id="welcomeText"></h2>
+
+<p>Enter the topic you want to learn</p>
+
+<input type="text" id="topic" placeholder="Example: Cybersecurity">
+
+<br>
+
+<button onclick="nextPage(2)">Continue</button>
+
+</div>
+
+
+<!-- PAGE 3 DOMAIN -->
+
+<div id="page3" class="container hidden">
+
+<h2>Select Learning Domain</h2>
+
+<select id="sector">
+
+<option value="technology">Technology & IT</option>
+
+<option value="programming">Programming</option>
+
+<option value="business">Business</option>
+
+<option value="management">Management</option>
+
+<option value="science">Science</option>
+
+</select>
+
+<br>
+
+<button onclick="loadQuiz()">Start Quiz</button>
+
+</div>
+
+
+<!-- PAGE 4 QUIZ -->
+
+<div id="page4" class="container hidden">
+
+<h2>Quiz</h2>
+
+<div id="quiz"></div>
+
+<button onclick="submitQuiz()">Submit Quiz</button>
+
+</div>
+
+
+<!-- PAGE 5 RESULT -->
+
+<div id="page5" class="container hidden">
+
+<h2>Quiz Result</h2>
+
+<div id="result"></div>
+
+<button onclick="showExplanation()">View Topic Explanation</button>
+
+</div>
+
+
+<!-- PAGE 6 EXPLANATION -->
+
+<div id="page6" class="container hidden">
+
+<h2>Topic Explanation</h2>
+
+<div id="explanation"></div>
+
+<button onclick="showVideos()">View Learning Videos</button>
+
+</div>
+
+
+<!-- PAGE 7 VIDEOS -->
+
+<div id="page7" class="container hidden">
+
+<h2>Recommended Videos</h2>
+
+<div id="videos"></div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
