@@ -1,6 +1,29 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from database import Base, engine
+from routes import auth, progress
+
+import requests
+import os
+import json
+from dotenv import load_dotenv
+
+# ---------------- ENV ---------------- #
+
+load_dotenv()
+
+HF_API_KEY = os.getenv("HF_API_KEY")
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
+
+API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+
+headers = {
+    "Authorization": f"Bearer {HF_API_KEY}"
+}
+
+# ---------------- APP ---------------- #
+
 app = FastAPI()
 
 app.add_middleware(
@@ -11,256 +34,211 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/get_quiz")
-def get_quiz(topic: str, sector: str):
+# ---------------- DB INIT ---------------- #
 
-    if sector == "technology":
+Base.metadata.create_all(bind=engine)
 
-        quiz = [
-            {
-                "question": f"What is the primary role of {topic} in modern IT systems?",
-                "options": [
-                    "Improving system performance",
-                    "Managing network infrastructure",
-                    "Enhancing data processing capabilities",
-                    "Supporting scalable software solutions"
-                ],
-                "answer": "Supporting scalable software solutions"
-            },
-            {
-                "question": f"{topic} is most closely associated with which discipline?",
-                "options": [
-                    "Computer Science",
-                    "Information Technology",
-                    "Software Engineering",
-                    "Data Engineering"
-                ],
-                "answer": "Computer Science"
-            },
-            {
-                "question": f"Which benefit does {topic} commonly provide in technology environments?",
-                "options": [
-                    "Operational efficiency",
-                    "Improved system reliability",
-                    "Scalable architecture",
-                    "Optimized data processing"
-                ],
-                "answer": "Operational efficiency"
-            },
-            {
-                "question": f"Organizations adopt {topic} primarily to achieve what objective?",
-                "options": [
-                    "Improved digital infrastructure",
-                    "Enhanced information management",
-                    "Better system integration",
-                    "Increased computing efficiency"
-                ],
-                "answer": "Improved digital infrastructure"
-            }
-        ]
+# ---------------- ROUTES ---------------- #
 
-    elif sector == "business":
+app.include_router(auth.router)
+app.include_router(progress.router)
 
-        quiz = [
-            {
-                "question": f"How can {topic} contribute to organizational strategy?",
-                "options": [
-                    "Supporting informed decision making",
-                    "Enhancing operational planning",
-                    "Improving resource allocation",
-                    "Strengthening competitive advantage"
-                ],
-                "answer": "Supporting informed decision making"
-            },
-            {
-                "question": f"{topic} primarily influences which business function?",
-                "options": [
-                    "Operational management",
-                    "Strategic planning",
-                    "Performance monitoring",
-                    "Resource management"
-                ],
-                "answer": "Strategic planning"
-            },
-            {
-                "question": f"What is a major advantage of applying {topic} in business operations?",
-                "options": [
-                    "Increased productivity",
-                    "Better financial management",
-                    "Improved decision accuracy",
-                    "Enhanced operational efficiency"
-                ],
-                "answer": "Enhanced operational efficiency"
-            },
-            {
-                "question": f"{topic} can help organizations achieve which outcome?",
-                "options": [
-                    "Improved organizational performance",
-                    "Better market competitiveness",
-                    "Efficient business processes",
-                    "Enhanced strategic alignment"
-                ],
-                "answer": "Improved organizational performance"
-            }
-        ]
+# ---------------- AI QUERY ---------------- #
 
-    elif sector == "management":
+def query(payload):
+    try:
+        payload["parameters"] = {
+            "temperature": 0.3,
+            "max_new_tokens": 500
+        }
 
-        quiz = [
-            {
-                "question": f"{topic} helps organizations improve which management capability?",
-                "options": [
-                    "Team coordination",
-                    "Project planning",
-                    "Workforce collaboration",
-                    "Operational efficiency"
-                ],
-                "answer": "Team coordination"
-            },
-            {
-                "question": f"{topic} commonly supports which project management objective?",
-                "options": [
-                    "Effective project execution",
-                    "Improved team productivity",
-                    "Better communication flow",
-                    "Efficient workflow management"
-                ],
-                "answer": "Effective project execution"
-            },
-            {
-                "question": f"{topic} can enhance organizational success by improving?",
-                "options": [
-                    "Leadership effectiveness",
-                    "Team collaboration",
-                    "Project outcomes",
-                    "Strategic alignment"
-                ],
-                "answer": "Team collaboration"
-            },
-            {
-                "question": f"Which workplace outcome results from effective use of {topic}?",
-                "options": [
-                    "Improved team performance",
-                    "Better task prioritization",
-                    "Efficient project delivery",
-                    "Enhanced workplace coordination"
-                ],
-                "answer": "Efficient project delivery"
-            }
-        ]
-    elif sector == "programming":
+        response = requests.post(
+            API_URL,
+            headers=headers,
+            json=payload,
+            timeout=10
+        )
 
-        quiz = [
+        return response.json()
+
+    except Exception as e:
+        print("HF Error:", e)
+        return None
+
+
+# ---------------- FALLBACK QUIZ (ALWAYS 5) ---------------- #
+
+def fallback_quiz(topic):
+    return [
         {
-            "question": f"In programming, how is time complexity of {topic} usually expressed?",
-            "options": [
-                "Big-O notation",
-                "Binary notation",
-                "Decimal notation",
-                "Scientific notation"
-            ],
-            "answer": "Big-O notation"
+            "question": f"What is {topic}?",
+            "options": ["Basic concept", "Hardware", "Software", "None"],
+            "answer": "Basic concept",
+            "level": "beginner",
+            "explanation": f"{topic} is a fundamental concept."
         },
         {
-            "question": f"What is the primary goal of optimizing {topic} in software development?",
-            "options": [
-                "Reducing execution time and memory usage",
-                "Increasing code length",
-                "Adding more variables",
-                "Reducing readability"
-            ],
-            "answer": "Reducing execution time and memory usage"
+            "question": f"Where is {topic} used?",
+            "options": ["Real systems", "Art only", "Music", "Sports"],
+            "answer": "Real systems",
+            "level": "beginner",
+            "explanation": f"{topic} is used in real-world applications."
         },
         {
-            "question": f"{topic} is commonly analyzed to understand what aspect of an algorithm?",
-            "options": [
-                "Efficiency",
-                "User interface design",
-                "Database schema",
-                "Network configuration"
-            ],
-            "answer": "Efficiency"
+            "question": f"Why is {topic} important?",
+            "options": ["Efficiency", "Decoration", "Gaming", "None"],
+            "answer": "Efficiency",
+            "level": "beginner",
+            "explanation": f"{topic} improves efficiency."
         },
         {
-            "question": f"Which factor most affects the complexity of {topic} in programming?",
-            "options": [
-                "Input size",
-                "Color scheme",
-                "Keyboard layout",
-                "Operating system theme"
-            ],
-            "answer": "Input size"
+            "question": f"What improves {topic} performance?",
+            "options": ["Optimization", "Ignoring", "Random", "None"],
+            "answer": "Optimization",
+            "level": "intermediate",
+            "explanation": "Optimization improves performance."
+        },
+        {
+            "question": f"Advanced use of {topic}?",
+            "options": ["System design", "Basic usage", "Simple idea", "None"],
+            "answer": "System design",
+            "level": "advanced",
+            "explanation": f"{topic} is used in system design."
         }
     ]
 
-    else:
 
-        quiz = [
-            {
-                "question": f"{topic} contributes primarily to which area of scientific development?",
-                "options": [
-                    "Scientific research",
-                    "Technological innovation",
-                    "Applied science",
-                    "Interdisciplinary studies"
-                ],
-                "answer": "Scientific research"
-            },
-            {
-                "question": f"Research in {topic} helps scientists understand?",
-                "options": [
-                    "Natural systems",
-                    "Scientific processes",
-                    "Environmental interactions",
-                    "Technological applications"
-                ],
-                "answer": "Natural systems"
-            },
-            {
-                "question": f"{topic} plays an important role in advancing?",
-                "options": [
-                    "Scientific advancement",
-                    "Technological progress",
-                    "Sustainable development",
-                    "Global innovation"
-                ],
-                "answer": "Scientific advancement"
-            },
-            {
-                "question": f"{topic} is commonly studied in which environment?",
-                "options": [
-                    "Research institutions",
-                    "Scientific laboratories",
-                    "Academic universities",
-                    "Technology development centers"
-                ],
-                "answer": "Academic universities"
-            }
-        ]
+# ---------------- QUIZ (FIXED - ALWAYS 5) ---------------- #
 
-    return {"quiz": quiz}
+@app.get("/get_quiz")
+def get_quiz(topic: str, sector: str):
 
+    prompt = f"""
+You are a strict JSON generator.
+
+TOPIC: {topic}
+DOMAIN: {sector}
+
+Return ONLY a JSON array of 5 MCQs.
+
+Each item:
+{{
+  "question": "...",
+  "options": ["A","B","C","D"],
+  "answer": "A",
+  "level": "beginner|intermediate|advanced",
+  "explanation": "1-2 lines"
+}}
+
+NO TEXT. ONLY JSON.
+"""
+
+    try:
+        response = query({"inputs": prompt})
+
+        print("HF RAW RESPONSE:", response)  # 🔥 DEBUG
+
+        if not response:
+            return fallback_quiz(topic)
+
+        # -----------------------------
+        # 🔥 FIX: handle all response types
+        # -----------------------------
+
+        if isinstance(response, dict):
+            text = response.get("generated_text", "")
+        elif isinstance(response, list):
+            text = response[0].get("generated_text", "")
+        else:
+            return fallback_quiz(topic)
+
+        if not text:
+            return fallback_quiz(topic)
+
+        print("AI TEXT:", text)
+
+        start = text.find("[")
+        end = text.rfind("]")
+
+        if start == -1 or end == -1:
+            return fallback_quiz(topic)
+
+        json_str = text[start:end+1]
+
+        quiz = json.loads(json_str)
+
+        if not isinstance(quiz, list):
+            return fallback_quiz(topic)
+
+        return quiz[:5]
+
+    except Exception as e:
+        print("QUIZ ERROR:", e)
+        return fallback_quiz(topic)
+
+# ---------------- EXPLANATION ---------------- #
 
 @app.get("/get_explanation")
 def get_explanation(topic: str, level: str):
 
-    explanation = f"{topic} explanation designed for {level} level learners. This section helps learners understand the key concepts, importance, and real-world applications of the topic."
+    prompt = f"""
+You are an expert tutor.
 
-    return {"explanation": explanation}
+Explain the topic: {topic}
 
+Student level: {level}
+
+Rules:
+- Write a SINGLE well-structured paragraph
+- Must be easy for {level} learner
+- Include real-world examples
+- Must feel like a human teacher explanation
+- No bullet points
+"""
+
+    result = query({"inputs": prompt})
+
+    try:
+        text = result[0]["generated_text"]
+        return {"explanation": text}
+    except:
+        return {
+            "explanation": f"{topic} is an important concept used in real-world applications and becomes more powerful when understood deeply at the {level} level."
+        }
+
+
+# ---------------- VIDEOS ---------------- #
 
 @app.get("/get_videos")
-def get_videos(topic: str):
+def get_videos(topic: str, level: str):
 
-    videos = [
-        {
-            "title": f"{topic} Tutorial",
-            "url": f"https://www.youtube.com/results?search_query={topic}+tutorial"
-        },
-        {
-            "title": f"{topic} Lecture",
-            "url": f"https://www.youtube.com/results?search_query={topic}+lecture"
-        }
-    ]
+    if not YOUTUBE_API_KEY:
+        return {"videos": [{"title": "No API key", "url": "#"}]}
 
-    return {"videos": videos}
+    try:
+        from googleapiclient.discovery import build
+
+        youtube = build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
+
+        request = youtube.search().list(
+            part="snippet",
+            q=f"{topic} {level} tutorial",
+            maxResults=5,
+            type="video"
+        )
+
+        response = request.execute()
+
+        videos = []
+
+        for item in response.get("items", []):
+            videos.append({
+                "title": item["snippet"]["title"],
+                "url": f"https://www.youtube.com/watch?v={item['id']['videoId']}"
+            })
+
+        return {"videos": videos}
+
+    except Exception as e:
+        print("YouTube error:", e)
+        return {"videos": [{"title": "Error loading videos", "url": "#"}]}

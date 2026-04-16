@@ -6,50 +6,126 @@
 
 <style>
 
+/* Background */
 body{
-font-family: Arial;
-background:#f4f6fb;
-text-align:center;
-margin-top:80px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    text-align:center;
+    margin:0;
+    padding:0;
+    color:#333;
 }
 
+/* Container Card */
 .container{
-width:600px;
-margin:auto;
-padding:30px;
-background:white;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
-animation:fadeIn 0.6s;
+    width: 420px;
+    margin: 80px auto;
+    padding: 30px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s ease;
+    backdrop-filter: blur(10px);
 }
 
+/* Hidden */
 .hidden{
-display:none;
+    display:none;
 }
 
+/* Headings */
+h2{
+    margin-bottom: 10px;
+    color:#444;
+}
+
+p{
+    color:#666;
+}
+
+/* Inputs */
+input, select{
+    padding: 12px;
+    width: 90%;
+    margin-top: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline:none;
+    transition: 0.3s;
+}
+
+input:focus, select:focus{
+    border-color:#667eea;
+    box-shadow: 0 0 6px rgba(102,126,234,0.5);
+}
+
+/* Buttons */
 button{
-padding:10px 20px;
-margin-top:15px;
-background:#4a6cf7;
-color:white;
-border:none;
-border-radius:6px;
-cursor:pointer;
+    padding: 12px 20px;
+    margin-top: 18px;
+    background: linear-gradient(135deg,#667eea,#5a67d8);
+    color:white;
+    border:none;
+    border-radius: 8px;
+    cursor:pointer;
+    font-weight: bold;
+    transition: 0.3s;
 }
 
 button:hover{
-background:#3551d1;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
-input,select{
-padding:8px;
-width:70%;
-margin-top:10px;
+/* Quiz Options */
+#quiz label{
+    display:block;
+    background:#f4f6fb;
+    margin:8px 0;
+    padding:10px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.3s;
 }
 
+#quiz label:hover{
+    background:#e0e7ff;
+}
+
+/* Result Box */
+#result{
+    font-size:18px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+/* Videos */
+#videos iframe{
+    margin-top:10px;
+    border-radius:10px;
+}
+
+/* Dashboard */
+#dashboard{
+    text-align:left;
+    margin-top:15px;
+    background:#f9f9ff;
+    padding:15px;
+    border-radius:10px;
+}
+
+/* Fade Animation */
 @keyframes fadeIn{
-from{opacity:0; transform:translateY(20px);}
-to{opacity:1; transform:translateY(0);}
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+/* Mobile Responsive */
+@media(max-width:500px){
+    .container{
+        width:90%;
+        margin:40px auto;
+    }
 }
 
 </style>
@@ -59,24 +135,31 @@ to{opacity:1; transform:translateY(0);}
 <body>
 
 <!-- PAGE 1 LOGIN -->
-
 <div id="page1" class="container">
 
 <h2>Welcome to Learning Assistant</h2>
 
-<p>Please enter your name</p>
+<p>Login to continue</p>
 
-<input type="text" id="username" placeholder="Your name">
+<input type="text" id="username" placeholder="Username">
+<br>
+<input type="password" id="password" placeholder="Password">
 
 <br>
 
-<button onclick="nextPage(1)">Start Learning</button>
+<!-- ✅ FIXED: Use login() instead of nextPage -->
+<button onclick="login()">Login / Start</button>
+
+<!-- ✅ OPTIONAL SIGNUP -->
+<button onclick="signup()">Signup</button>
+
+<!-- ✅ ERROR MESSAGE -->
+<p id="loginError" style="color:red;"></p>
 
 </div>
 
 
 <!-- PAGE 2 TOPIC -->
-
 <div id="page2" class="container hidden">
 
 <h2 id="welcomeText"></h2>
@@ -93,7 +176,6 @@ to{opacity:1; transform:translateY(0);}
 
 
 <!-- PAGE 3 DOMAIN -->
-
 <div id="page3" class="container hidden">
 
 <h2>Select Learning Domain</h2>
@@ -101,13 +183,9 @@ to{opacity:1; transform:translateY(0);}
 <select id="sector">
 
 <option value="technology">Technology & IT</option>
-
 <option value="programming">Programming</option>
-
 <option value="business">Business</option>
-
 <option value="management">Management</option>
-
 <option value="science">Science</option>
 
 </select>
@@ -120,7 +198,6 @@ to{opacity:1; transform:translateY(0);}
 
 
 <!-- PAGE 4 QUIZ -->
-
 <div id="page4" class="container hidden">
 
 <h2>Quiz</h2>
@@ -133,38 +210,52 @@ to{opacity:1; transform:translateY(0);}
 
 
 <!-- PAGE 5 RESULT -->
-
 <div id="page5" class="container hidden">
 
 <h2>Quiz Result</h2>
 
 <div id="result"></div>
 
-<button onclick="showExplanation()">View Topic Explanation</button>
+<button onclick="showExplanation()">View Explanation</button>
 
 </div>
 
 
 <!-- PAGE 6 EXPLANATION -->
-
 <div id="page6" class="container hidden">
 
 <h2>Topic Explanation</h2>
 
 <div id="explanation"></div>
 
-<button onclick="showVideos()">View Learning Videos</button>
+<button onclick="showVideos()">View Videos</button>
 
 </div>
 
 
 <!-- PAGE 7 VIDEOS -->
-
 <div id="page7" class="container hidden">
 
 <h2>Recommended Videos</h2>
 
 <div id="videos"></div>
+
+<br>
+
+<!-- ✅ ADDED DASHBOARD BUTTON -->
+<button onclick="loadDashboard()">Go to Dashboard</button>
+
+</div>
+
+
+<!-- PAGE 8 DASHBOARD -->
+<div id="page8" class="container hidden">
+
+<h2>📊 Dashboard</h2>
+
+<div id="dashboard"></div>
+
+<button onclick="loadDashboard()">Refresh</button>
 
 </div>
 

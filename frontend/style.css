@@ -1,24 +1,92 @@
+/* Background */
 body {
-    font-family: Arial;
+    font-family: 'Segoe UI', Arial, sans-serif;
     text-align: center;
-    margin-top: 60px;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #333;
 }
 
+/* Main Container */
+.container {
+    background: #fff;
+    width: 400px;
+    margin: 80px auto;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Heading */
+h1 {
+    margin-bottom: 20px;
+    color: #444;
+}
+
+/* Input Fields */
 input {
-    padding: 10px;
-    width: 300px;
+    padding: 12px;
+    width: 90%;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: 0.3s;
 }
 
+input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 5px rgba(102,126,234,0.5);
+}
+
+/* Buttons */
 button {
-    padding: 10px;
-    margin-left: 10px;
+    padding: 12px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #667eea;
+    color: white;
+    font-weight: bold;
     cursor: pointer;
+    transition: 0.3s;
 }
 
+button:hover {
+    background: #5a67d8;
+    transform: scale(1.05);
+}
+
+/* List */
 ul {
     list-style: none;
+    padding: 0;
+    margin-top: 20px;
 }
 
+/* List Items */
 li {
-    margin: 5px;
+    background: #f5f7ff;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+li:hover {
+    background: #e0e7ff;
+    transform: translateX(5px);
+}
+
+/* Error Message */
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+/* Success Message */
+.success {
+    color: green;
+    margin-top: 10px;
 }

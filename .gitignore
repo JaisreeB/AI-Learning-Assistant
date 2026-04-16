@@ -1,0 +1,49 @@
+# =========================
+# Python cache files
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# =========================
+# Virtual environment
+# =========================
+venv/
+env/
+.env/
+
+# =========================
+# Environment variables (IMPORTANT)
+# =========================
+backend/.env
+
+# =========================
+# Database files (SQLite)
+# =========================
+*.db
+*.sqlite
+*.sqlite3
+backend/learning.db
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# IDE / Editor files
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Git extras (if mistakenly created)
+# =========================
+.gitignore/
