@@ -1,0 +1,13 @@
+# fastapi
+# uvicorn
+# sqlalchemy
+# passlib
+# bcrypt
+
+fastapi
+uvicorn
+sqlalchemy
+passlib[bcrypt]
+python-dotenv
+requests
+google-api-python-client
